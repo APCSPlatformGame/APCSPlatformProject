@@ -5,7 +5,7 @@ import java.awt.Graphics;
 import com.sun.prism.Image;
 
 public class Entity implements Paint {
-	protected Image gif; //icon needed to load the 
+	protected Image gif; //icon of entity
 	protected int size;
 	protected int x, y, vx=0, vy=0;
 	
