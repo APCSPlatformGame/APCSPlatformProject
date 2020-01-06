@@ -177,10 +177,11 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 //			boolean isInfront = player.rect.x + player.rect.width > entity.rect.x && player.rect.x + player.rect.width <= entity.rect.x + player.rect.width;
 //			boolean isBehind = player.rect.x  < entity.rect.x + entity.rect.width && player.rect.x >= entity.rect.x + entity.rect.width/2 - player.rect.width;
 //			
+			boolean onTop = player.rect.intersects(entity.getTop());
 			boolean isBelow = player.rect.intersects(entity.getBottom());
 			boolean isBehind = player.rect.intersects(entity.getRight());
 			boolean isInfront = player.rect.intersects(entity.getLeft());
-			boolean onTop = player.rect.intersects(entity.getTop());
+			
 			System.out.println("onTop:" +  onTop);
 			
 			
