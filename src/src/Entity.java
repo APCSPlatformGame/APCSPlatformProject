@@ -22,7 +22,7 @@ public class Entity implements Paint {
 		y = (int) screen.getHeight() - size-70;
 		x = 0;
 		this.rect = new Rectangle(size, size);
-		faces[0] = new Rectangle(x, y, size, 5); // Top Face
+		faces[0] = new Rectangle(x, y-5, size, 5); // Top Face
 		faces[1] = new Rectangle(x, y, 5, size); // Left Face
 		faces[2] = new Rectangle(x + size, y, 5, size); // Right Face
 		faces[3] = new Rectangle(x, y + size, size, 5); // Bottom Face
@@ -64,7 +64,7 @@ public class Entity implements Paint {
 	public void paint(Graphics g) {
 		x += vx;
 		rect = new Rectangle(x, y, size, size);
-		faces[0] = new Rectangle(x, y, size, 5); // Top Face
+		faces[0] = new Rectangle(x, y-5, size, 5); // Top Face
 		faces[1] = new Rectangle(x, y, 5, size); // Left Face
 		faces[2] = new Rectangle(x + size, y, 5, size); // Right Face
 		faces[3] = new Rectangle(x, y + size, size, 5); // Bottom Face
@@ -73,7 +73,7 @@ public class Entity implements Paint {
 		g.setColor(Color.blue);
 		g.drawRect(rect.x, rect.y, rect.width, rect.height);
 		g.setColor(Color.GREEN);
-		g.drawRect(x, y, size, 5);
+		g.drawRect(x, y-5, size, 5);
 		
 	};
 }
