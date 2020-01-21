@@ -13,8 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import javafx.scene.shape.TriangleMesh;
-
 
 //https://stackoverflow.com/questions/20389255/reading-a-resource-file-from-within-jar 
 //Use this resource when we complete the project, as we want a runnable jar file instead of an eclipse project.
@@ -29,6 +27,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 	private JFrame f;
 	private boolean onGround = true;
 	private int gravity = 10;
+	private int scrapCount = 0;
 	
 	public World(Image bg2) {
 		f = new JFrame();
