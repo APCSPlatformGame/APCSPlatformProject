@@ -62,5 +62,38 @@ public class Player extends Entity implements Paint{
 		g.setColor(Color.blue);
 		g.drawRect(rect.x, rect.y, rect.width, rect.height);
 	}
+	public void gameOver(Graphics g, Dimension screen){
+		if(health==0){
+			g.fillRect(0, 0, screen.width, screen.height);
+			health = 3;
+			super.x = 50;
+			deaths++;
+		}
+		if(deaths == 1){
+			g.drawString("Oh... oh you... died... oh no... I need you not to do that next time okay?", 40, 40);
+		}
+		if(deaths == 2){
+			g.drawString("You know, you really aren't getting the message here... Get the scrap and get out, it isn't hard.", 40, 40);
+		}
+		if(deaths == 3){
+			g.drawString("I've been more than patient with you, any more deaths and Undertale is going to sue us.", 40, 40);
+		}
+		if(deaths == 4){
+			g.drawString("Have you considered getting someone who doesn't suck at video games to help you get out of here? Please? For me? I have things to do too.", 40, 40);
+		}
+		if(deaths == 5){
+			g.drawString("WHAT THE HELL ARE YOU DOING!!! JUST JUMP!!! IT ISN'T HARD!!! FOR THE LOVE OF MOTHER F... (KNOCK KNOCK KNOCK)", 40, 40);
+		}
+		if(deaths >= 6){
+			g.drawString("NOTICE: ANGRY DROID HAS BEEN REPOSSESSED BY TOBY FOX AND CO. PLEASE PROCEED WITH CAUTION", 40, 40);
+		}
+	}
+	
+	public void damage(){
+		//collision detection
+		if(damaged==true){
+			health--;
+		}
+	}
 
 }
