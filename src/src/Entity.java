@@ -11,30 +11,32 @@ import java.awt.Toolkit;
 public class Entity implements Paint {
 	protected Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
 	protected Image gif; //icon 
-	protected int size;
+	protected Dimension size;
 	protected int x, y, vx=0, vy=0;
 	protected Rectangle rect;
-	private Rectangle[] faces = new Rectangle[4];
+	protected Rectangle[] faces = new Rectangle[4];
+	public boolean switcher = false;
+	private int numTicks = 0;
 	
-	public Entity(int size, Image gif) {
+	public Entity(Dimension size, Image gif) {
 		this.size = size;
 		this.gif = gif;
-		y = (int) screen.getHeight() - size-70;
+		y = (int) screen.getHeight() - size.height-70;
 		x = 0;
-		this.rect = new Rectangle(size, size);
-		faces[0] = new Rectangle(x, y-5, size, 5); // Top Face
-		faces[1] = new Rectangle(x, y, 5, size); // Left Face
-		faces[2] = new Rectangle(x + size, y, 5, size); // Right Face
-		faces[3] = new Rectangle(x, y + size, size, 5); // Bottom Face
+		rect = new Rectangle(x, y, screen.width, screen.height);
+		faces[0] = new Rectangle(x, y, size.width, 5); // Top Face
+		faces[1] = new Rectangle(x, y+5, 5, size.height-5); // Left Face
+		faces[2] = new Rectangle(x + size.width -5, y+5, 5, size.height-5); // Right Face
+		faces[3] = new Rectangle(x, y + size.height, size.width, 5); // Bottom Face
 	}
 	
-	public Entity(int size,Image gif, int x, int y) {
+	public Entity(Dimension size,Image gif, int x, int y) {
 		this(size, gif);
 		this.x = x;
 		this.y = y;
 	}
 	
-	public int size() {return size;}
+	public Dimension size() {return size;}
 	public int X() {return x;}
 	public int Y() {return y;}
 	public void setY(int y) {
@@ -59,21 +61,51 @@ public class Entity implements Paint {
 	public void setGif(Image gif) {
 		this.gif = gif;
 	}
+	public void switcher(int max) {
+		max = Math.abs(max);
+		if(numTicks == max) {
+			numTicks = 0;
+		}else if( numTicks <= max/2){
+			switcher = false;
+			numTicks++;
+		}else {
+			switcher = true;
+			numTicks++;
+		}
+	}
+	public void move(int id) {
+		switch(id) {
+			case 1:
+				if(switcher == false) {y--;}
+				else {y++;}
+				break;
+			case 2:
+				if(!switcher) { x--; }
+				else { x++; }
+				break;
+			case 3:
+				break;
+		}
+			
+	}
 	
 	@Override
 	public void paint(Graphics g) {
 		x += vx;
-		rect = new Rectangle(x, y, size, size);
-		faces[0] = new Rectangle(x, y-5, size, 5); // Top Face
-		faces[1] = new Rectangle(x, y, 5, size); // Left Face
-		faces[2] = new Rectangle(x + size, y, 5, size); // Right Face
-		faces[3] = new Rectangle(x, y + size, size, 5); // Bottom Face
+		this.rect = new Rectangle(x, y, size.width, size.height);
+		faces[0] = new Rectangle(x, y, size.width, 5); // Top Face
+		faces[1] = new Rectangle(x, y+5, 5, size.height-5); // Left Face
+		faces[2] = new Rectangle(x + size.width -5, y+5, 5, size.height-5); // Right Face
+		faces[3] = new Rectangle(x, y + size.height, size.width, 5); // Bottom Face
 		g.setColor(Color.orange);
-		g.fillRect(x, y, size, size);
+		g.fillRect(x, y, size.width, size.height);
 		g.setColor(Color.blue);
+		g.drawRect(x + size.width -5, y+5, 5, size.height-5);
+		g.drawRect(x, y+5, 5, size.height-5);
 		g.drawRect(rect.x, rect.y, rect.width, rect.height);
 		g.setColor(Color.GREEN);
-		g.drawRect(x, y-5, size, 5);
-		
+		g.drawRect(x, y, size.width, 5);
+		g.drawRect(x, y + size.height, size.width, 5);
+	
 	};
 }
