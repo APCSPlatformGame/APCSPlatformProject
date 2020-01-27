@@ -11,7 +11,7 @@ public class Player extends Entity implements Paint{
 	private final int fullSize = super.size.height;
 	public int jump = 0;
 	public int accel = 0;
-	public int health = 10;
+	public int health = 100000;
 	public int deaths = 0;
 	private boolean damaged = false;
 	private boolean bleedingOver = false;
@@ -44,7 +44,7 @@ public class Player extends Entity implements Paint{
 	public void jump(boolean onGround) {
 		if(onGround) {
 			super.y -= 1;
-			jump = 25;
+			jump = 28;
 		}
 	}
 	
@@ -55,6 +55,13 @@ public class Player extends Entity implements Paint{
 	public void unCrouch() {
 		size.height = fullSize;
 		super.y -= fullSize;
+	}
+	
+	public void strike(Enemy e) {
+		rect = new Rectangle(x, y, size.width*2, size.height);
+		if(e.rect.intersects(rect)) {
+			e.size = new Dimension(0, 0);
+		}
 	}
 	
 	public void paint(Graphics g) {

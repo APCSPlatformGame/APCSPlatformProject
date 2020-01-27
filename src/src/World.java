@@ -8,6 +8,8 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.io.IOException;
+import java.util.Base64;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -25,16 +27,17 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 	final int screen_height = (int) screen.getHeight();	
 	private Toolkit tool = Toolkit.getDefaultToolkit();
 	private Image bg;
-	private Image playerImg = tool.getImage("C:\\Users\\Tom\\git\\APCSPlatformProject\\Images\\4xuYrtpE7YSLfvaX.gif") ;
+	private Image playerImg = null;
 	private Player player = new Player(new Dimension(30 ,70), playerImg);
 	private JFrame f;
 	private boolean onGround = true;
 	private int gravity = 2;
-	private int scrapCount = 0;
 	private int numJumps = 0;
 	private boolean canMoveForward = true;
 	private boolean canMoveBackward = true;
+	private int scrapCount = 0;
 
+	private Scrap scrap = new Scrap(new Dimension(20, 20), null, 2300, 250-90);
 	private Entity wall1 = new Entity(new Dimension(70 ,screen_height), null, 0, 0);
 	private Entity wall2 = new Entity(new Dimension(70 ,screen_height), null, 2600, 0);
 	final Entity[] startPos = new Entity[] {new Entity(new Dimension(100 ,100), null, 270, screen_height-170), new Entity(new Dimension(100 ,100), null, 600, screen_height-170), 
@@ -81,18 +84,35 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.drawImage(bg, 0, 0, screen_width, screen_height, null);
 		if(player.health > 0) {
-			player.paint(g);
-			for(Entity e : Blocks) {
-				e.paint(g);
+			if(scrapCount != 0) {
+				g.fillRect(0, 0, screen_width, screen_height);
+				g.setColor(Color.white);
+				g.drawString("Congrats! You won this demo!", 100, 100);
+				g.drawString("Unfortunetly, we ran out of time for story and levels, so here's the entire thing in one giant text block.", 100, 200);
+				String s = "Copypasta"; 
+				try {
+					FileIO.ReadWrite(new File(".\\copypasta.txt"), s);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				g.drawString(s, 100, 300);
+			}else {
+				player.paint(g);
+				for(Entity e : Blocks) {
+					e.paint(g);
+				}
+				for(Enemy d : Enemies) {
+					d.paint(g);
+				}
+				wall1.paint(g);
+				wall2.paint(g);
+				scrap.paint(g);
+				//g.drawString("You have died " + player.deaths + " times.", 700, 700);
+				//g.drawString("You have " + player.health + " hearts left.", 700, 600);
+				//g.drawString("You have " + scrapCount + " scrap in your inventory.", 700, 500);
 			}
-			for(Enemy d : Enemies) {
-				d.paint(g);
-			}
-			wall1.paint(g);
-			wall2.paint(g);
-			//g.drawString("You have died " + player.deaths + " times.", 700, 700);
-			//g.drawString("You have " + player.health + " hearts left.", 700, 600);
-			//g.drawString("You have " + scrapCount + " scrap in your inventory.", 700, 500);
 		}else if (player.health <= 0){
 			g.fillRect(0, 0, screen_width, screen_height);
 			g.setColor(Color.white);
@@ -154,10 +174,24 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		case 83: //S
 			player.unCrouch();
 			break;
+		case 32: //space
 
+			if(numJumps >= 2) {
+				numJumps = 0;
+			}
+			else {
+				player.jump(true);
+				numJumps++;
+			}
+			break;
+		case 81:
+			for(Enemy e : Enemies) {
+				player.strike(e);
+			}
 		}
 
 	}
+
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
@@ -180,29 +214,37 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		}else {
 			onGround = false;
 		}
-	
+
 		Collide(player, wall1);
 		Collide(player, wall2);
 		if(canMoveForward && canMoveBackward) {wall2.setVx(-player.accel); wall1.setVx(-player.accel);}
 		else {
 			wall2.setVx(0); wall1.setVx(0);
 		}
-		
-		
+
+		scrapCount = scrap.checkScrap(scrapCount, player);
+		if(canMoveBackward && canMoveForward) {scrap.setVx(-player.accel);}
+		else {scrap.setVx(0);}
+
 		for(Entity r : Blocks) {
 			Collide(player, r);
-			int num = (int) (Math.random()*3);
 			r.switcher(100);
-			r.move(2);
+			r.move(0);
 			if(canMoveForward && canMoveBackward) {r.setVx(-player.accel);}
 			else {r.setVx(0);}
 		}
-	
+
 		for(Enemy f : Enemies) {
 			player.damage(f.rect);
 			if(canMoveForward && canMoveBackward) {f.setVx(-player.accel);}
 			else {f.setVx(0);}
 		}
+		for(int i = 0; i < Enemies.length-1; i++) {
+			Enemies[i].switcher(100);
+			Enemies[i].move(1);
+		}
+		Enemies[2].switcher(100);
+		Enemies[2].move(1);
 		if(player.accel > 0 && onGround) {
 			player.accel--;
 		}else if(player.accel < 0 && onGround) {
@@ -219,7 +261,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 			player.jump = 0;
 		}
 
-	
+
 	}
 
 	public void Collide(Player player, Entity entity) {

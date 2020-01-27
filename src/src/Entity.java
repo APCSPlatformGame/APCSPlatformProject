@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
@@ -36,6 +37,13 @@ public class Entity implements Paint {
 		this.y = y;
 	}
 	
+	public Point getPos() {
+		return new Point(x, y);
+	}
+	public void setPos(Point newPos) {
+		x = newPos.x;
+		y = newPos.y;
+	}
 	public Dimension size() {return size;}
 	public int X() {return x;}
 	public int Y() {return y;}
@@ -57,7 +65,6 @@ public class Entity implements Paint {
 	public void setVx(int vx) {this.vx = vx;}
 	public void setVy(int vy) {this.vy = vy;}
 	public void setScreen(Dimension screen) {this.screen = screen;}
-
 	public void setGif(Image gif) {
 		this.gif = gif;
 	}

@@ -12,7 +12,7 @@ public class Npc extends Entity{
 	public void paint(Graphics g, int Scrap) {
 		super.paint(g);
 		if(Scrap != 1) {
-			g.drawString(str, Scrap, Scrap);
+			g.drawString("", Scrap, Scrap);
 		}
 	}
 	
