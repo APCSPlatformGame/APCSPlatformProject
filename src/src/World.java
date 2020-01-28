@@ -71,8 +71,6 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		f.setVisible(true);
 
-
-
 	}
 	private void init(boolean isJar) {
 		System.out.println(isJar);
