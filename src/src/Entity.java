@@ -3,6 +3,7 @@ package src;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 
@@ -17,6 +18,7 @@ public class Entity implements Paint {
 	protected Rectangle[] faces = new Rectangle[4];
 	public boolean switcher = false; //Boolean to determine when to change direction
 	private int numTicks = 0; //tick for how long to move
+	protected  Point startPoint;
 	
 //========================Constructors========================//
 	public Entity(Dimension size, Image gif) {
@@ -29,12 +31,14 @@ public class Entity implements Paint {
 		faces[1] = new Rectangle(x, y+5, 5, size.height-5); // Left Face
 		faces[2] = new Rectangle(x + size.width -5, y+5, 5, size.height-5); // Right Face
 		faces[3] = new Rectangle(x, y + size.height, size.width, 5); // Bottom Face
+		startPoint = new Point(x, y);
 	}
 	
 	public Entity(Dimension size,Image gif, int x, int y) {
 		this(size, gif);
 		this.x = x;
 		this.y = y;
+		startPoint = new Point(x, y);
 	}
 	public Entity(Dimension size,Image[] gifs, int x, int y) {
 		if(size.width > size.height) {
@@ -52,6 +56,7 @@ public class Entity implements Paint {
 		faces[1] = new Rectangle(x, y+5, 5, size.height-5); // Left Face
 		faces[2] = new Rectangle(x + size.width -5, y+5, 5, size.height-5); // Right Face
 		faces[3] = new Rectangle(x, y + size.height, size.width, 5); // Bottom Face
+		startPoint = new Point(x, y);
 	}
 	
 //========================Getters and Setters========================//
@@ -93,10 +98,13 @@ public class Entity implements Paint {
 				break;
 			case 3:
 				break;
-		}
-			
+		}	
 	}
-	
+	public void resetPos() {
+		x = startPoint.x;
+		y = startPoint.y;
+		numTicks = 0;
+	}
 //========================Painting========================//	
 	@Override
 	public void paint(Graphics g) {

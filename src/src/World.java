@@ -8,6 +8,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -25,7 +26,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 	final int screen_height = (int) screen.getHeight();	
 	private Toolkit tool = Toolkit.getDefaultToolkit();
 	private String imgSrc = new File("").getAbsolutePath().toString() + "\\src\\Images\\";
-	private boolean isJar = true; //change for compile
+	private boolean isJar = false; //change for compile
 	private Image bg; 
 	private Image playerImg; 
 	private Image Enemy1; 
@@ -34,13 +35,14 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 	private Image scrapImg;
 	private JFrame f;
 	//Gameplay variables
-	private boolean onGround = true;
+	private boolean onGround = false;
+	private boolean isDead = false;
 	private int gravity = 2;
 	private int numJumps = 0;
 	private boolean canMoveForward = true;
 	private boolean canMoveBackward = true;
 	private int scrapCount = 0;
-	private int bgX = -200, bgY = 0;
+	private int bgX = 0, bgY = 0;
 	//Game Objects
 	private Player player;
 	private Scrap scrap;
@@ -118,8 +120,8 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		scrap = new Scrap(new Dimension(20, 20), scrapImg, 2300, 250-90);
 		wall1 = new Entity(new Dimension(200 ,screen_height), plats[0], -200, 0);
 		wall2 = new Entity(new Dimension(200 ,screen_height), plats[0], 2600, 0);
-
 	}
+
 	//========================Painting========================//
 	@Override
 	public void paint(Graphics g) {
@@ -134,6 +136,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 				g.drawString("Congrats! You won this demo!", 100, 100);
 				g.drawString("Unfortunetly, we ran out of time for story and levels, so here's the entire thing in one giant text block.", 100, 200);
 				g.drawString("Oh, sorry, it's in black ink.", 100, 300);
+				isDead = true;
 			}else {
 				g.setColor(Color.gray);
 				g.fillRect(0, screen_height-70, screen_width, screen_height);
@@ -147,11 +150,13 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 				wall1.paint(g);
 				wall2.paint(g);
 				scrap.paint(g);
+				isDead = false;
 			}
 		}else if (player.health <= 0){
-			g.fillRect(0, 0, screen_width, screen_height);
+			g.fillRect(0, 0, 2600, screen_height);
 			g.setColor(Color.white);
 			g.drawString("You died", screen_width/2, screen_height/2);
+			isDead = true;
 		}
 	}
 
@@ -211,7 +216,18 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 			player.unCrouch();
 			break;
 		case 32: //space
-			jump();
+			if(!isDead) {jump();}
+			else {
+				for(Entity e : Enemies) {e.resetPos();}
+				for(Entity e : Blocks) {e.resetPos();}
+				scrap.resetPos();
+				player.resetPos();
+				wall1.resetPos();
+				wall2.resetPos();
+				player.health=10;
+				scrapCount = 0;
+				bgX = 0;
+			}
 			break;
 		case 81:
 			for(Enemy e : Enemies) {
@@ -263,12 +279,14 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 			if(canMoveForward && canMoveBackward) {f.setVx(-player.accel);}
 			else {f.setVx(0);}
 		}
-		for(int i = 0; i < Enemies.length-1; i++) {
-			Enemies[i].switcher(100);
-			Enemies[i].move(1);
+		if(!isDead) {
+			for(int i = 0; i < Enemies.length-1; i++) {
+				Enemies[i].switcher(100);
+				Enemies[i].move(1);
+			}
+			Enemies[2].switcher(100);
+			Enemies[2].move(2);
 		}
-		Enemies[2].switcher(100);
-		Enemies[2].move(2);
 		//Setting player acceleration
 		if(player.accel > 0 && onGround) {
 			player.accel--;

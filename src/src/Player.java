@@ -22,6 +22,7 @@ public class Player extends Entity implements Paint{
 	public Player(Dimension size, Image gif) {
 		super(size, gif);
 		super.x = 100;
+		super.startPoint.x = 100;
 		futureRectangles[0] = new Rectangle(x-1, y, 1, size.height);
 		futureRectangles[1] = new Rectangle(x+size.width, y, 1, size.height);
 	}
