@@ -8,8 +8,6 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
-import java.util.ArrayList;
-
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -75,7 +73,6 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 
 	}
 	private void init(boolean isJar) {
-		System.out.println(isJar);
 		if(!isJar) {
 			bg = tool.getImage(imgSrc + "BG.png");
 			playerImg =tool.getImage(imgSrc +"Player.png");
@@ -85,9 +82,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 			scrapImg = tool.getImage(imgSrc +"scrap.png");
 		}else {
 			try {
-				if(getClass().getResourceAsStream("/BG.png") != null) {
-					System.out.println("GetClass works");
-				}else {
+				if(getClass().getResourceAsStream("/BG.png") == null) {
 					System.err.println("Error, getClass is null");
 				}
 				bg = ImageIO.read(getClass().getResourceAsStream("/BG.png"));
@@ -130,16 +125,17 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 		g2d.drawImage(bg, bgX, bgY, 2600, 800, null);
 
 		if(player.health > 0) { //Not dead
-			if(scrapCount != 0) { //Win condition
-				g.fillRect(0, 0, screen_width, screen_height);
+			if(scrapCount > 0) { //Win condition
+				System.out.println(scrapCount);
+				scrap.paint(g);
+				g.setColor(new Color(0, 0, 0, 127));
+				g.fillRect(0, 0, tool.getScreenSize().width, tool.getScreenSize().height);
 				g.setColor(Color.white);
 				g.drawString("Congrats! You won this demo!", 100, 100);
 				g.drawString("Unfortunetly, we ran out of time for story and levels, so here's the entire thing in one giant text block.", 100, 200);
 				g.drawString("Oh, sorry, it's in black ink.", 100, 300);
 				isDead = true;
-			}else {
-				g.setColor(Color.gray);
-				g.fillRect(0, screen_height-70, screen_width, screen_height);
+			} else {
 				player.paint(g);
 				for(Entity e : Blocks) {
 					e.paint(g);
@@ -147,9 +143,13 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 				for(Enemy d : Enemies) {
 					d.paint(g);
 				}
+				g.setColor(Color.gray);
+				g.fillRect(0, screen_height-70, 2600, screen_height);
 				wall1.paint(g);
 				wall2.paint(g);
 				scrap.paint(g);
+				g.setColor(Color.red);
+				g.fillRect(10, screen_height-60, player.health * 10, 10);
 				isDead = false;
 			}
 		}else if (player.health <= 0){
@@ -165,32 +165,33 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 
 	//========================Player Input========================//
 	public void keyPressed(KeyEvent arg0) {
-		switch(arg0.getKeyCode()) {
-		case 65: //A
-			if(canMoveBackward) {
-				if(player.accel == 0) {
-					player.accel = -2;
+		if(!isDead) {
+			switch(arg0.getKeyCode()) {
+			case 65: //A
+				if(canMoveBackward) {
+					if(player.accel == 0) {
+						player.accel = -2;
+					}
+					player.moveLeft();
+				}else {
+					player.accel++;;
 				}
-				player.moveLeft();
-			}else {
-				player.accel++;;
-			}
-			break;
-		case 83: //S
-			player.crouch();
-			break;
-		case 68: //D
-			if(canMoveForward) {
-				if(player.accel == 0) {
-					player.accel = 2;
+				break;
+			case 83: //S
+				player.crouch();
+				break;
+			case 68: //D
+				if(canMoveForward) {
+					if(player.accel == 0) {
+						player.accel = 2;
+					}
+					player.moveRight();
+				}else {
+					player.accel--;
 				}
-				player.moveRight();
-			}else {
-				player.accel--;
+				break;
 			}
-			break;
 		}
-
 	}
 
 	private void jump() {
@@ -207,7 +208,7 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {
+	public  void keyReleased(KeyEvent arg0) {
 		switch(arg0.getKeyCode()) {
 		case 87: //W
 			jump();
@@ -221,12 +222,13 @@ public class World extends JPanel implements KeyListener, ActionListener, Paint,
 				for(Entity e : Enemies) {e.resetPos();}
 				for(Entity e : Blocks) {e.resetPos();}
 				scrap.resetPos();
-				player.resetPos();
+				player.resetPos(); 
 				wall1.resetPos();
 				wall2.resetPos();
 				player.health=10;
 				scrapCount = 0;
 				bgX = 0;
+				System.out.println("Scrap Count:" + scrapCount + "Health:" + player.health + "IsDead:" + isDead);
 			}
 			break;
 		case 81:

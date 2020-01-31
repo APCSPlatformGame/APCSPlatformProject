@@ -78,7 +78,7 @@ public class Entity implements Paint {
 		max = Math.abs(max);
 		if(numTicks == max) {
 			numTicks = 0;
-		}else if( numTicks <= max/2){
+		}else if( numTicks < max/2){
 			switcher = false;
 			numTicks++;
 		}else {
